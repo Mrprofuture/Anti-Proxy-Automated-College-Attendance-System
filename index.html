@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-page">
+
+    <div class="login-card">
+        <div class="logo">🎓</div>
+
+        <h1>College Attendance</h1>
+        <p>Anti-Proxy Attendance System</p>
+
+        <form id="loginForm">
+
+            <label>User ID / Email</label>
+            <input
+                type="text"
+                id="loginUser"
+                placeholder="Enter user ID"
+                required
+            >
+
+            <label>Password</label>
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter password"
+                required
+            >
+
+            <label>Login As</label>
+
+            <select id="loginRole">
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <button type="submit" class="primary-btn">
+                Login
+            </button>
+
+        </form>
+
+        <p class="demo">
+            Demo: enter any ID and password
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- MAIN APPLICATION -->
+<div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            🎓
+            <span>College<br>Attendance</span>
+        </div>
+
+        <nav id="teacherMenu">
+
+            <button onclick="showPage('dashboardPage')" class="nav-btn active">
+                🏠 Dashboard
+            </button>
+
+            <button onclick="showPage('studentsPage')" class="nav-btn">
+                👨‍🎓 Students
+            </button>
+
+            <button onclick="showPage('attendancePage')" class="nav-btn">
+                📷 Attendance
+            </button>
+
+            <button onclick="showPage('reportsPage')" class="nav-btn">
+                📊 Reports
+            </button>
+
+            <button onclick="showPage('auditPage')" class="nav-btn">
+                🔐 Audit Logs
+            </button>
+
+        </nav>
+
+        <nav id="studentMenu" class="hidden">
+
+            <button onclick="showPage('studentDashboardPage')" class="nav-btn active">
+                🏠 Dashboard
+            </button>
+
+            <button onclick="showPage('studentAttendancePage')" class="nav-btn">
+                📅 My Attendance
+            </button>
+
+        </nav>
+
+        <button onclick="logout()" class="logout-btn">
+            🚪 Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div>
+                <h2 id="pageTitle">Dashboard</h2>
+                <p id="currentDate"></p>
+            </div>
+
+            <div class="profile">
+                <div class="avatar">A</div>
+                <div>
+                    <strong id="userName">Teacher</strong>
+                    <small id="userRole">Teacher</small>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- ================= TEACHER DASHBOARD ================= -->
+
+        <section id="dashboardPage" class="page">
+
+            <div class="welcome">
+                <div>
+                    <h1>Welcome back 👋</h1>
+                    <p>Manage today's attendance from your dashboard.</p>
+                </div>
+
+                <button
+                    class="primary-btn"
+                    onclick="showPage('attendancePage')">
+                    Start Attendance
+                </button>
+            </div>
+
+
+            <div class="cards">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">👨‍🎓</div>
+                    <div>
+                        <p>Total Students</p>
+                        <h2 id="totalStudents">50</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">✓</div>
+                    <div>
+                        <p>Present Today</p>
+                        <h2 id="presentCount">0</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon red">✕</div>
+                    <div>
+                        <p>Absent Today</p>
+                        <h2 id="absentCount">50</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">%</div>
+                    <div>
+                        <p>Attendance</p>
+                        <h2 id="attendancePercent">0%</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="content-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <h3>Today's Attendance</h3>
+
+                        <button onclick="showPage('attendancePage')">
+                            View All
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Subject</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="dashboardAttendance"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>Attendance Overview</h3>
+
+                    <div class="progress-container">
+
+                        <div class="progress-circle">
+                            <span id="circlePercent">0%</span>
+                        </div>
+
+                    </div>
+
+                    <p class="center">
+                        Today's overall attendance
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STUDENTS ================= -->
+
+        <section id="studentsPage" class="page hidden">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Students</h1>
+                    <p>Manage registered students and face data.</p>
+                </div>
+
+                <button
+                    class="primary-btn"
+                    onclick="openStudentModal()">
+                    + Add Student
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="search-bar">
+
+                    <input
+                        type="text"
+                        id="studentSearch"
+                        placeholder="Search student..."
+                        onkeyup="searchStudents()"
+                    >
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Branch</th>
+                                <th>Semester</th>
+                                <th>Section</th>
+                                <th>Face Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="studentTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ATTENDANCE ================= -->
+
+        <section id="attendancePage" class="page hidden">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Attendance Session</h1>
+                    <p>Start a live anti-proxy attendance session.</p>
+                </div>
+
+            </div>
+
+
+            <div class="attendance-layout">
+
+                <!-- SESSION SETTINGS -->
+
+                <div class="panel session-panel">
+
+                    <h3>Class Setup</h3>
+
+                    <label>Subject</label>
+
+                    <select id="subject">
+                        <option>MEES301 - Engineering Mechanics</option>
+                        <option>MEES302 - Thermodynamics</option>
+                        <option>MTH301 - Mathematics</option>
+                        <option>HSS301 - Humanities</option>
+                    </select>
+
+
+                    <label>Section</label>
+
+                    <select id="section">
+                        <option>A</option>
+                        <option>B</option>
+                        <option>C</option>
+                    </select>
+
+
+                    <label>Lecture</label>
+
+                    <select id="lecture">
+                        <option>Lecture 1</option>
+                        <option>Lecture 2</option>
+                        <option>Lecture 3</option>
+                        <option>Lecture 4</option>
+                    </select>
+
+
+                    <button
+                        id="startSessionBtn"
+                        class="primary-btn full"
+                        onclick="startAttendance()">
+
+                        Start Attendance
+
+                    </button>
+
+                    <button
+                        id="stopSessionBtn"
+                        class="danger-btn full hidden"
+                        onclick="stopAttendance()">
+
+                        Stop Attendance
+
+                    </button>
+
+                    <div id="sessionStatus" class="session-status">
+                        Session not started
+                    </div>
+
+                </div>
+
+
+                <!-- CAMERA -->
+
+                <div class="panel camera-panel">
+
+                    <h3>Live Camera</h3>
+
+                    <div class="camera-container">
+
+                        <video
+                            id="camera"
+                            autoplay
+                            playsinline>
+                        </video>
+
+                        <div class="face-frame"></div>
+
+                        <div id="cameraMessage" class="camera-message">
+                            Start attendance to activate camera
+                        </div>
+
+                    </div>
+
+
+                    <div class="verification">
+
+                        <div id="liveStatus" class="verify-item">
+                            <span>○</span>
+                            Liveness Detection
+                        </div>
+
+                        <div id="faceStatus" class="verify-item">
+                            <span>○</span>
+                            Face Recognition
+                        </div>
+
+                        <div id="classStatus" class="verify-item">
+                            <span>○</span>
+                            Class Validation
+                        </div>
+
+                        <div id="duplicateStatus" class="verify-item">
+                            <span>○</span>
+                            Duplicate Check
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="verifyBtn"
+                        class="primary-btn full hidden"
+                        onclick="simulateVerification()">
+
+                        Verify Student
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ATTENDANCE TABLE -->
+
+            <div class="panel attendance-table">
+
+                <div class="panel-header">
+
+                    <h3>Live Attendance</h3>
+
+                    <span class="badge">
+                        <span id="liveCount">0</span> Present
+                    </span>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Time</th>
+                                <th>Liveness</th>
+                                <th>Face Match</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="attendanceTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= REPORTS ================= -->
+
+        <section id="reportsPage" class="page hidden">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Reports</h1>
+                    <p>Generate attendance reports.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel filters">
+
+                <div>
+                    <label>Subject</label>
+
+                    <select>
+                        <option>All Subjects</option>
+                        <option>MEES301</option>
+                        <option>MEES302</option>
+                        <option>MTH301</option>
+                    </select>
+                </div>
+
+
+                <div>
+                    <label>From</label>
+                    <input type="date">
+                </div>
+
+
+                <div>
+                    <label>To</label>
+                    <input type="date">
+                </div>
+
+
+                <button
+                    class="primary-btn"
+                    onclick="generateReport()">
+                    Generate
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>Attendance Report</h3>
+
+                <div class="report-cards">
+
+                    <div>
+                        <span>Total Classes</span>
+                        <strong>20</strong>
+                    </div>
+
+                    <div>
+                        <span>Average Attendance</span>
+                        <strong>84%</strong>
+                    </div>
+
+                    <div>
+                        <span>Low Attendance</span>
+                        <strong>7</strong>
+                    </div>
+
+                </div>
+
+                <button
+                    class="secondary-btn"
+                    onclick="downloadReport()">
+                    Export Report
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= AUDIT ================= -->
+
+        <section id="auditPage" class="page hidden">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Audit Logs</h1>
+                    <p>Track attendance modifications.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Student</th>
+                                <th>Reason</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>17-08-2026 10:15</td>
+                                <td>Teacher</td>
+                                <td>Attendance Modified</td>
+                                <td>20260003</td>
+                                <td>Camera failure</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STUDENT DASHBOARD ================= -->
+
+        <section id="studentDashboardPage" class="page hidden">
+
+            <div class="welcome">
+
+                <div>
+                    <h1>My Attendance 👋</h1>
+                    <p>Track your attendance performance.</p>
+                </div>
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">📚</div>
+                    <div>
+                        <p>Total Classes</p>
+                        <h2>42</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">✓</div>
+                    <div>
+                        <p>Present</p>
+                        <h2>36</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon red">✕</div>
+                    <div>
+                        <p>Absent</p>
+                        <h2>6</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">%</div>
+                    <div>
+                        <p>Attendance</p>
+                        <h2>85.71%</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>Subject-wise Attendance</h3>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Present</th>
+                            <th>Total</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>MEES301</td>
+                            <td>12</td>
+                            <td>14</td>
+                            <td>85.71%</td>
+                        </tr>
+
+                        <tr>
+                            <td>MEES302</td>
+                            <td>10</td>
+                            <td>12</td>
+                            <td>83.33%</td>
+                        </tr>
+
+                        <tr>
+                            <td>MTH301</td>
+                            <td>14</td>
+                            <td>16</td>
+                            <td>87.50%</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STUDENT ATTENDANCE ================= -->
+
+        <section id="studentAttendancePage" class="page hidden">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>My Attendance</h1>
+                    <p>Complete attendance history.</p>
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Lecture</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>17-08-2026</td>
+                            <td>MEES301</td>
+                            <td>Lecture 3</td>
+                            <td><span class="status present">Present</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>16-08-2026</td>
+                            <td>MTH301</td>
+                            <td>Lecture 2</td>
+                            <td><span class="status present">Present</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>15-08-2026</td>
+                            <td>MEES302</td>
+                            <td>Lecture 1</td>
+                            <td><span class="status absent">Absent</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ADD STUDENT MODAL -->
+
+<div id="studentModal" class="modal hidden">
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <h2>Add Student</h2>
+
+            <button onclick="closeStudentModal()">×</button>
+
+        </div>
+
+        <form id="studentForm">
+
+            <label>Student ID</label>
+            <input id="newStudentId" required>
+
+            <label>Name</label>
+            <input id="newStudentName" required>
+
+            <label>Branch</label>
+            <input id="newStudentBranch" placeholder="Mechanical">
+
+            <label>Semester</label>
+            <select id="newStudentSemester">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+            </select>
+
+            <label>Section</label>
+            <select id="newStudentSection">
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+            </select>
+
+            <button class="primary-btn full" type="submit">
+                Add Student
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
